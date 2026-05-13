@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EvalPro — Connexion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root {
+  --navy:    #0B0F1A;
+  --navy2:   #111827;
+  --navy3:   #1C2535;
+  --navy4:   #253045;
+  --navy5:   #2E3C55;
+  --line:    rgba(255,255,255,0.07);
+  --line2:   rgba(255,255,255,0.13);
+  --accent:  #4F8EF7;
+  --accent2: #3B7AE8;
+  --teal:    #2DD4BF;
+  --green:   #22C55E;
+  --green-s: rgba(34,197,94,0.12);
+  --red:     #EF4444;
+  --red-s:   rgba(239,68,68,0.12);
+  --amber:   #F59E0B;
+  --amber-s: rgba(245,158,11,0.1);
+  --gold:    #F59E0B;
+  --gold-s:  rgba(245,158,11,0.12);
+  --text:    #F1F5F9;
+  --text2:   #94A3B8;
+  --text3:   #4B5B73;
+  --r:       10px;
+  --r2:      14px;
+  --r3:      18px;
+}
+*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+body {
+  font-family:'DM Sans',sans-serif;
+  background:var(--navy);
+  color:var(--text);
+  min-height:100vh;
+  font-size:14px;
+  line-height:1.6;
+  overflow-x:hidden;
+}
+
+/* ─── LOGIN ─── */
+#login-screen {
+  min-height:100vh;
+  display:flex; align-items:center; justify-content:center;
+  padding:2rem;
+  background: radial-gradient(ellipse at 30% 20%, rgba(79,142,247,0.08) 0%, transparent 60%),
+              radial-gradient(ellipse at 70% 80%, rgba(45,212,191,0.06) 0%, transparent 55%);
+}
+.login-card {
+  background:var(--navy2);
+  border:1px solid var(--line2);
+  border-radius:24px;
+  padding:2.5rem;
+  width:100%; max-width:420px;
+  box-shadow:0 24px 80px rgba(0,0,0,0.5);
+}
+.login-logo {
+  text-align:center; margin-bottom:2rem;
+}
+.login-badge {
+  width:56px; height:56px; border-radius:16px;
+  background:linear-gradient(135deg,#4F8EF7,#2DD4BF);
+  display:inline-flex; align-items:center; justify-content:center;
+  font-size:26px; margin-bottom:12px;
+  box-shadow:0 0 28px rgba(79,142,247,0.4);
+}
+.login-title {
+  font-family:'Sora',sans-serif; font-size:22px; font-weight:700;
+  letter-spacing:-.02em;
+  background:linear-gradient(90deg,#fff 40%,#4F8EF7);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+.login-sub { font-size:13px; color:var(--text3); margin-top:4px; }
+.form-group { margin-bottom:16px; }
+.form-label { display:block; font-size:12px; font-weight:500; color:var(--text3); text-transform:uppercase; letter-spacing:.05em; margin-bottom:7px; }
+.form-input {
+  width:100%; background:var(--navy3);
+  border:1px solid var(--line2); border-radius:var(--r);
+  padding:11px 14px; font-size:14px; color:var(--text);
+  font-family:'DM Sans',sans-serif; transition:all .15s;
+}
+.form-input:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(79,142,247,0.15); }
+.form-select {
+  width:100%; background:var(--navy3);
+  border:1px solid var(--line2); border-radius:var(--r);
+  padding:11px 14px; font-size:14px; color:var(--text);
+  font-family:'DM Sans',sans-serif; cursor:pointer;
+  transition:all .15s; appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%234B5B73' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right 14px center;
+  padding-right:36px;
+}
+.form-select:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(79,142,247,0.15); }
+.btn-login {
+  width:100%; padding:13px; border-radius:var(--r);
+  background:var(--accent); color:#fff; border:none;
+  font-size:15px; font-weight:600; font-family:'Sora',sans-serif;
+  cursor:pointer; letter-spacing:.01em;
+  box-shadow:0 0 20px rgba(79,142,247,0.3);
+  transition:all .15s;
+}
+.btn-login:hover { background:var(--accent2); box-shadow:0 0 28px rgba(79,142,247,0.45); transform:translateY(-1px); }
+.login-error {
+  background:var(--red-s); border:1px solid rgba(239,68,68,0.3);
+  border-radius:var(--r); padding:10px 14px;
+  color:var(--red); font-size:13px; margin-bottom:16px; display:none;
+}
+.login-error.show { display:block; }
+.login-footer { text-align:center; margin-top:1.5rem; font-size:12px; color:var(--text3); }
+
+/* ─── APP ─── */
+#app-screen { display:none; }
+
+/* TOPBAR */
+.topbar {
+  position:sticky; top:0; z-index:200;
+  background:rgba(11,15,26,0.92);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--line);
+  padding:0 2rem;
+  height:64px;
+  display:flex; align-items:center; justify-content:space-between; gap:16px;
+}
+.topbar-brand { display:flex; align-items:center; gap:14px; }
+.brand-badge {
+  width:36px; height:36px; border-radius:10px;
+  background:linear-gradient(135deg,#4F8EF7,#2DD4BF);
+  display:flex; align-items:center; justify-content:center;
+  font-size:17px; flex-shrink:0;
+  box-shadow:0 0 14px rgba(79,142,247,0.3);
+}
+.brand-name {
+  font-family:'Sora',sans-serif; font-weight:700; font-size:16px;
+  background:linear-gradient(90deg,#fff 40%,#4F8EF7);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  letter-spacing:-.02em;
+}
+.brand-sub { font-size:11px; color:var(--text3); margin-top:-2px; }
+.topbar-center { display:flex; gap:6px; }
+.tab-btn {
+  padding:7px 16px; border-radius:var(--r);
+  font-size:13px; font-weight:500; cursor:pointer;
+  border:1px solid transparent; background:transparent;
+  color:var(--text3); font-family:'DM Sans',sans-serif;
+  transition:all .15s; display:flex; align-items:center; gap:6px;
+}
+.tab-btn:hover { background:var(--navy3); color:var(--text2); }
+.tab-btn.active { background:var(--navy3); border-color:var(--line2); color:var(--text); }
+.tab-btn.admin-tab { color:var(--gold); }
+.tab-btn.admin-tab.active { background:var(--gold-s); border-color:rgba(245,158,11,0.3); color:var(--gold); }
+.topbar-right { display:flex; gap:8px; align-items:center; }
+.user-chip {
+  display:flex; align-items:center; gap:8px;
+  background:var(--navy3); border:1px solid var(--line2);
+  border-radius:99px; padding:5px 12px 5px 6px;
+  font-size:13px;
+}
+.user-avatar {
+  width:26px; height:26px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:11px; font-weight:700; color:#fff;
+  flex-shrink:0;
+}
+.user-name { font-weight:500; color:var(--text2); }
+.role-badge {
+  font-size:10px; font-weight:600; padding:2px 8px; border-radius:99px;
+  letter-spacing:.04em;
+}
+.role-admin { background:var(--gold-s); color:var(--gold); border:1px solid rgba(245,158,11,0.25); }
+.role-super { background:rgba(79,142,247,0.12); color:var(--accent); border:1px solid rgba(79,142,247,0.25); }
+.btn-logout {
+  background:none; border:1px solid var(--line); border-radius:var(--r);
+  padding:6px 12px; color:var(--text3); font-size:12px; cursor:pointer;
+  font-family:'DM Sans',sans-serif; transition:all .15s;
+}
+.btn-logout:hover { border-color:var(--red); color:var(--red); background:var(--red-s); }
+
+/* SAVED PILL */
+.saved-pill {
+  display:inline-flex; align-items:center; gap:5px;
+  font-size:11px; padding:4px 11px; border-radius:99px;
+  background:var(--green-s); color:var(--green);
+  border:1px solid rgba(34,197,94,0.2);
+  opacity:0; transform:translateY(-4px); transition:all .25s;
+  pointer-events:none; font-weight:500;
+}
+.saved-pill.show { opacity:1; transform:translateY(0); }
+
+/* BUTTONS */
+.btn {
+  display:inline-flex; align-items:center; gap:7px;
+  padding:8px 16px; border-radius:var(--r);
+  font-size:13px; font-weight:500; cursor:pointer;
+  font-family:'DM Sans',sans-serif;
+  border:1px solid var(--line2);
+  background:var(--navy3); color:var(--text2);
+  transition:all .15s; white-space:nowrap;
+}
+.btn:hover { background:var(--navy4); color:var(--text); }
+.btn svg { width:14px; height:14px; flex-shrink:0; }
+.btn-accent { background:var(--accent); color:#fff; border-color:var(--accent2); box-shadow:0 0 14px rgba(79,142,247,0.25); }
+.btn-accent:hover { background:var(--accent2); color:#fff; }
+.btn-ghost { background:transparent; border-color:transparent; color:var(--text3); }
+.btn-ghost:hover { background:var(--navy3); color:var(--text2); border-color:var(--line2); }
+.btn-danger { background:var(--red-s); border-color:rgba(239,68,68,0.25); color:var(--red); }
+.btn-danger:hover { background:rgba(239,68,68,0.2); }
+
+/* MAIN */
+.main { padding:2rem; max-width:1750px; margin:0 auto; }
+
+/* PANEL */
+.panel { display:none; }
+.panel.active { display:block; }
+
+/* HERO */
+.hero { display:flex; align-items:center; justify-content:space-between; margin-bottom:2rem; gap:1rem; flex-wrap:wrap; }
+.hero-title { font-family:'Sora',sans-serif; font-size:22px; font-weight:700; letter-spacing:-.03em; }
+.hero-title span { color:var(--accent); }
+.hero-sub { font-size:13px; color:var(--text3); margin-top:3px; }
+
+/* STATS */
+.stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; margin-bottom:1.5rem; }
+.stat {
+  background:var(--navy2); border-radius:var(--r2); border:1px solid var(--line);
+  padding:18px 20px; position:relative; overflow:hidden;
+  transition:border-color .2s, transform .15s;
+}
+.stat:hover { border-color:var(--line2); transform:translateY(-1px); }
+.stat::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; border-radius:2px 2px 0 0; }
+.stat.blue::before  { background:var(--accent); }
+.stat.green::before { background:var(--green); }
+.stat.red::before   { background:var(--red); }
+.stat.teal::before  { background:var(--teal); }
+.stat.amber::before { background:var(--amber); }
+.stat-icon { font-size:18px; margin-bottom:8px; }
+.stat-label { font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--text3); font-weight:500; margin-bottom:4px; }
+.stat-val { font-family:'Sora',sans-serif; font-size:28px; font-weight:700; letter-spacing:-.02em; }
+.stat.blue  .stat-val { color:var(--accent); }
+.stat.green .stat-val { color:var(--green); }
+.stat.red   .stat-val { color:var(--red); }
+.stat.teal  .stat-val { color:var(--teal); }
+.stat.amber .stat-val { color:var(--amber); }
+
+/* FILTER BAR */
+.filter-bar {
+  background:var(--navy2); border:1px solid var(--line); border-radius:var(--r2);
+  padding:16px 20px; display:flex; gap:12px; align-items:flex-end; flex-wrap:wrap; margin-bottom:1.25rem;
+}
+.filter-group { display:flex; flex-direction:column; gap:5px; }
+.filter-label { font-size:11px; color:var(--text3); font-weight:500; text-transform:uppercase; letter-spacing:.05em; }
+.filter-bar select, .filter-bar input[type=text] {
+  background:var(--navy3); border:1px solid var(--line2); border-radius:var(--r);
+  padding:7px 11px; font-size:13px; color:var(--text); font-family:'DM Sans',sans-serif;
+  min-width:135px; transition:border-color .15s;
+}
+.filter-bar select:focus, .filter-bar input:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(79,142,247,0.12); }
+.filter-actions { display:flex; gap:8px; margin-left:auto; align-items:flex-end; }
+
+/* TABLE */
+.table-wrap { background:var(--navy2); border-radius:var(--r3); border:1px solid var(--line); overflow:hidden; }
+.table-scroll { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; min-width:1260px; }
+thead { background:var(--navy3); border-bottom:1px solid var(--line2); }
+th { padding:12px 14px; font-family:'Sora',sans-serif; font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:.08em; color:var(--text3); text-align:left; white-space:nowrap; }
+tbody tr { border-bottom:1px solid var(--line); transition:background .1s; }
+tbody tr:last-child { border-bottom:none; }
+tbody tr:hover { background:rgba(255,255,255,0.018); }
+td { padding:12px 14px; vertical-align:top; }
+
+/* CELL INPUTS */
+td input[type=text], td input[type=date] {
+  width:100%; background:var(--navy3); border:1px solid var(--line); border-radius:var(--r);
+  padding:7px 10px; font-size:13px; color:var(--text); font-family:'DM Sans',sans-serif; transition:all .15s;
+}
+td input:focus { outline:none; border-color:var(--accent); background:var(--navy4); box-shadow:0 0 0 3px rgba(79,142,247,0.1); }
+td textarea {
+  width:100%; background:var(--navy3); border:1px solid var(--line); border-radius:var(--r);
+  padding:7px 10px; font-size:12px; color:var(--text); font-family:'DM Sans',sans-serif;
+  resize:vertical; min-height:62px; line-height:1.55; transition:all .15s;
+}
+td textarea:focus { outline:none; border-color:var(--accent); background:var(--navy4); box-shadow:0 0 0 3px rgba(79,142,247,0.1); }
+
+/* ERROR BLOCK */
+.error-col { min-width:255px; display:flex; flex-direction:column; gap:7px; }
+.err-card { background:var(--navy3); border:1px solid var(--line); border-radius:var(--r); padding:10px 12px; transition:border-color .15s; }
+.err-card.active { border-color:rgba(79,142,247,0.38); background:rgba(79,142,247,0.05); }
+.err-header { display:flex; align-items:center; gap:9px; cursor:pointer; user-select:none; }
+.err-checkbox {
+  width:16px; height:16px; border-radius:5px;
+  border:1.5px solid var(--text3); background:transparent;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0; transition:all .15s; font-size:10px; font-weight:700; color:#fff;
+}
+.err-checkbox.checked { background:var(--accent); border-color:var(--accent); }
+.err-name { font-size:13px; font-weight:500; color:var(--text2); }
+.err-card.active .err-name { color:var(--text); }
+.err-badge { margin-left:auto; font-size:10px; padding:2px 8px; border-radius:99px; background:var(--accent); color:#fff; font-weight:600; opacity:0; transition:opacity .15s; }
+.err-card.active .err-badge { opacity:1; }
+.err-note { margin-top:8px; display:none; }
+.err-note.open { display:block; }
+
+/* DEBRIEF */
+.db-group { display:flex; flex-direction:column; gap:6px; min-width:96px; }
+.db-btn {
+  padding:9px 0; border-radius:var(--r); font-size:13px; font-weight:600;
+  font-family:'Sora',sans-serif; cursor:pointer;
+  border:1px solid var(--line2); background:var(--navy3); color:var(--text3);
+  width:100%; text-align:center; transition:all .15s;
+}
+.db-btn:hover { background:var(--navy4); color:var(--text2); }
+.db-btn.ok.on { background:var(--green-s); border-color:rgba(34,197,94,0.4); color:var(--green); box-shadow:0 0 10px rgba(34,197,94,0.1); }
+.db-btn.ko.on { background:var(--red-s); border-color:rgba(239,68,68,0.4); color:var(--red); box-shadow:0 0 10px rgba(239,68,68,0.1); }
+
+/* DELETE */
+.btn-del { background:none; border:none; cursor:pointer; color:var(--text3); padding:6px; border-radius:8px; display:flex; align-items:center; transition:all .15s; }
+.btn-del:hover { color:var(--red); background:var(--red-s); }
+
+/* EMPTY */
+.empty-wrap { text-align:center; padding:4rem 1rem; }
+.empty-icon { width:56px; height:56px; border-radius:16px; background:var(--navy3); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; font-size:24px; margin:0 auto 1rem; }
+.empty-wrap h3 { font-family:'Sora',sans-serif; font-size:16px; font-weight:600; color:var(--text2); margin-bottom:6px; }
+.empty-wrap p { font-size:13px; color:var(--text3); }
+
+/* READONLY ROW (admin view) */
+.readonly-cell { font-size:13px; color:var(--text2); padding:2px 0; }
+.pill-ok { display:inline-flex; align-items:center; gap:4px; background:var(--green-s); color:var(--green); border:1px solid rgba(34,197,94,0.3); border-radius:99px; font-size:12px; font-weight:600; padding:3px 11px; }
+.pill-ko { display:inline-flex; align-items:center; gap:4px; background:var(--red-s); color:var(--red); border:1px solid rgba(239,68,68,0.3); border-radius:99px; font-size:12px; font-weight:600; padding:3px 11px; }
+.pill-nd { display:inline-flex; background:var(--navy3); color:var(--text3); border:1px solid var(--line); border-radius:99px; font-size:12px; padding:3px 11px; }
+.err-pill { display:inline-block; background:var(--amber-s); color:var(--amber); border:1px solid rgba(245,158,11,0.25); border-radius:99px; font-size:11px; padding:2px 8px; margin:2px; font-weight:500; }
+.supervisor-tag { display:inline-flex; align-items:center; gap:5px; font-size:12px; font-weight:500; }
+.sup-dot { width:8px; height:8px; border-radius:50%; display:inline-block; }
+
+/* ADMIN PANEL */
+.admin-section { margin-bottom:2rem; }
+.section-title { font-family:'Sora',sans-serif; font-size:16px; font-weight:600; margin-bottom:1rem; display:flex; align-items:center; gap:8px; }
+.section-title span { color:var(--gold); }
+.users-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px; }
+.user-card {
+  background:var(--navy2); border:1px solid var(--line); border-radius:var(--r2);
+  padding:16px 18px; display:flex; align-items:center; gap:12px;
+  transition:border-color .15s;
+}
+.user-card:hover { border-color:var(--line2); }
+.uc-avatar { width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; color:#fff; flex-shrink:0; }
+.uc-name { font-weight:500; font-size:14px; color:var(--text); }
+.uc-role { font-size:11px; color:var(--text3); margin-top:2px; }
+.uc-count { margin-left:auto; text-align:right; }
+.uc-count-val { font-family:'Sora',sans-serif; font-size:18px; font-weight:700; color:var(--accent); }
+.uc-count-label { font-size:10px; color:var(--text3); }
+
+/* TOAST */
+.toast {
+  position:fixed; bottom:28px; right:28px; z-index:999;
+  background:var(--navy3); color:var(--text); border:1px solid var(--line2); border-radius:var(--r2);
+  padding:12px 20px; font-size:13px; font-weight:500; box-shadow:0 8px 32px rgba(0,0,0,0.5);
+  opacity:0; transform:translateY(10px) scale(.97);
+  transition:all .22s cubic-bezier(.34,1.56,.64,1); pointer-events:none;
+}
+.toast.show { opacity:1; transform:translateY(0) scale(1); }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width:6px; height:6px; }
+::-webkit-scrollbar-track { background:var(--navy2); }
+::-webkit-scrollbar-thumb { background:var(--navy5); border-radius:99px; }
+::-webkit-scrollbar-thumb:hover { background:var(--text3); }
+@keyframes rowIn { from{opacity:0;transform:translateY(-5px)} to{opacity:1;transform:translateY(0)} }
+tbody tr { animation:rowIn .18s ease; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════ LOGIN ══════════════ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-badge">📋</div>
+      <div class="login-title">EvalPro</div>
+      <div class="login-sub">Plateforme d'évaluation qualité</div>
+    </div>
+    <div class="login-error" id="login-error">Nom d'utilisateur ou mot de passe incorrect.</div>
+    <div class="form-group">
+      <label class="form-label">Utilisateur</label>
+      <select class="form-select" id="login-user">
+        <option value="">— Sélectionnez votre nom —</option>
+        <optgroup label="Superviseurs">
+          <option value="safae">Safae</option>
+          <option value="fatima">Fatima</option>
+          <option value="chaymae">Chaymae</option>
+          <option value="khalil">Khalil</option>
+          <option value="ikram">Ikram</option>
+        </optgroup>
+        <optgroup label="Administrateurs">
+          <option value="adnane">Adnane</option>
+          <option value="houda">Houda</option>
+        </optgroup>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Mot de passe</label>
+      <input type="password" class="form-input" id="login-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="btn-login" onclick="doLogin()">Se connecter</button>
+    <div class="login-footer">EvalPro · Données sauvegardées localement</div>
+  </div>
+</div>
+
+<!-- ══════════════ APP ══════════════ -->
+<div id="app-screen">
+  <header class="topbar">
+    <div class="topbar-brand">
+      <div class="brand-badge">📋</div>
+      <div>
+        <div class="brand-name">EvalPro</div>
+        <div class="brand-sub" id="topbar-sub">Évaluation qualité</div>
+      </div>
+    </div>
+    <div class="topbar-center" id="tab-bar">
+      <button class="tab-btn active" id="tab-eval" onclick="switchTab('eval')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="12" y2="16"/></svg>
+        Mes évaluations
+      </button>
+      <button class="tab-btn admin-tab" id="tab-admin" onclick="switchTab('admin')" style="display:none">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Administration
+      </button>
+      <button class="tab-btn admin-tab" id="tab-global" onclick="switchTab('global')" style="display:none">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        Vue globale
+      </button>
+    </div>
+    <div class="topbar-right">
+      <span class="saved-pill" id="saved-pill">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        Sauvegardé
+      </span>
+      <div class="user-chip">
+        <div class="user-avatar" id="topbar-avatar"></div>
+        <span class="user-name" id="topbar-name"></span>
+        <span class="role-badge" id="topbar-role"></span>
+      </div>
+      <button class="btn-logout" onclick="doLogout()">Déconnexion</button>
+    </div>
+  </header>
+
+  <main class="main">
+
+    <!-- ── PANEL : MES ÉVALUATIONS ── -->
+    <div class="panel active" id="panel-eval">
+      <div class="hero">
+        <div>
+          <div class="hero-title">Mes <span>évaluations</span></div>
+          <div class="hero-sub" id="eval-sub">Saisissez et suivez vos évaluations d'appels</div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn" onclick="exportCSV()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            CSV
+          </button>
+          <button class="btn" onclick="exportExcel()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+            Excel
+          </button>
+          <button class="btn btn-accent" onclick="addRow()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Nouvelle évaluation
+          </button>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat blue">  <div class="stat-icon">📊</div><div class="stat-label">Évaluations</div><div class="stat-val" id="s-total">0</div></div>
+        <div class="stat green"> <div class="stat-icon">✅</div><div class="stat-label">Debriefs OK</div><div class="stat-val" id="s-ok">0</div></div>
+        <div class="stat red">   <div class="stat-icon">❌</div><div class="stat-label">Debriefs KO</div><div class="stat-val" id="s-ko">0</div></div>
+        <div class="stat teal">  <div class="stat-icon">🎯</div><div class="stat-label">Taux OK</div>    <div class="stat-val" id="s-rate">—</div></div>
+        <div class="stat amber"> <div class="stat-icon">🎙</div><div class="stat-label">Élocution</div>  <div class="stat-val" id="s-eloc">0</div></div>
+        <div class="stat amber"> <div class="stat-icon">✍</div> <div class="stat-label">Syntaxe</div>    <div class="stat-val" id="s-synt">0</div></div>
+        <div class="stat amber"> <div class="stat-icon">📝</div><div class="stat-label">Conjugaison</div><div class="stat-val" id="s-conj">0</div></div>
+      </div>
+
+      <div class="filter-bar">
+        <div class="filter-group"><span class="filter-label">Équipe</span><select id="f-team" onchange="applyFilters()"><option value="">Toutes</option></select></div>
+        <div class="filter-group"><span class="filter-label">Débrief</span>
+          <select id="f-debrief" onchange="applyFilters()">
+            <option value="">Tous</option><option value="OK">OK</option><option value="KO">KO</option>
+          </select>
+        </div>
+        <div class="filter-group"><span class="filter-label">Recherche</span><input type="text" id="f-search" placeholder="Agent, ID appel…" oninput="applyFilters()"></div>
+        <div class="filter-actions">
+          <button class="btn btn-ghost" onclick="resetFilters()">✕ Réinitialiser</button>
+          <button class="btn btn-danger" onclick="clearAll()">🗑 Tout effacer</button>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <div class="table-scroll">
+          <table>
+            <thead><tr>
+              <th>Date</th><th>Nom de l'agent</th><th>ID Appel</th><th>Équipe</th><th>Évaluateur</th>
+              <th>Erreurs détectées</th><th>Corrections faites</th><th>Débrief</th><th></th>
+            </tr></thead>
+            <tbody id="eval-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PANEL : ADMINISTRATION ── -->
+    <div class="panel" id="panel-admin">
+      <div class="hero">
+        <div>
+          <div class="hero-title">⚙️ <span>Administration</span></div>
+          <div class="hero-sub">Gestion des utilisateurs et des accès</div>
+        </div>
+      </div>
+      <div class="admin-section">
+        <div class="section-title">👑 <span>Administrateurs</span></div>
+        <div class="users-grid" id="admin-admins-grid"></div>
+      </div>
+      <div class="admin-section">
+        <div class="section-title">🎧 <span>Superviseurs</span></div>
+        <div class="users-grid" id="admin-supers-grid"></div>
+      </div>
+    </div>
+
+    <!-- ── PANEL : VUE GLOBALE ── -->
+    <div class="panel" id="panel-global">
+      <div class="hero">
+        <div>
+          <div class="hero-title">🌐 Vue <span>globale</span></div>
+          <div class="hero-sub">Toutes les évaluations de tous les superviseurs</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn" onclick="exportGlobalCSV()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export global CSV
+          </button>
+          <button class="btn" onclick="exportGlobalExcel()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+            Export global Excel
+          </button>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat blue">  <div class="stat-icon">📊</div><div class="stat-label">Total</div>      <div class="stat-val" id="gs-total">0</div></div>
+        <div class="stat green"> <div class="stat-icon">✅</div><div class="stat-label">OK</div>          <div class="stat-val" id="gs-ok">0</div></div>
+        <div class="stat red">   <div class="stat-icon">❌</div><div class="stat-label">KO</div>          <div class="stat-val" id="gs-ko">0</div></div>
+        <div class="stat teal">  <div class="stat-icon">🎯</div><div class="stat-label">Taux OK</div>    <div class="stat-val" id="gs-rate">—</div></div>
+        <div class="stat amber"> <div class="stat-icon">🎙</div><div class="stat-label">Élocution</div>  <div class="stat-val" id="gs-eloc">0</div></div>
+        <div class="stat amber"> <div class="stat-icon">✍</div> <div class="stat-label">Syntaxe</div>    <div class="stat-val" id="gs-synt">0</div></div>
+        <div class="stat amber"> <div class="stat-icon">📝</div><div class="stat-label">Conjugaison</div><div class="stat-val" id="gs-conj">0</div></div>
+      </div>
+
+      <div class="filter-bar">
+        <div class="filter-group"><span class="filter-label">Superviseur</span><select id="gf-sup" onchange="applyGlobalFilters()"><option value="">Tous</option></select></div>
+        <div class="filter-group"><span class="filter-label">Équipe</span><select id="gf-team" onchange="applyGlobalFilters()"><option value="">Toutes</option></select></div>
+        <div class="filter-group"><span class="filter-label">Débrief</span>
+          <select id="gf-debrief" onchange="applyGlobalFilters()">
+            <option value="">Tous</option><option value="OK">OK</option><option value="KO">KO</option>
+          </select>
+        </div>
+        <div class="filter-group"><span class="filter-label">Recherche</span><input type="text" id="gf-search" placeholder="Agent, ID appel…" oninput="applyGlobalFilters()"></div>
+        <div class="filter-actions"><button class="btn btn-ghost" onclick="resetGlobalFilters()">✕ Réinitialiser</button></div>
+      </div>
+
+      <div class="table-wrap">
+        <div class="table-scroll">
+          <table>
+            <thead><tr>
+              <th>Superviseur</th><th>Date</th><th>Agent</th><th>ID Appel</th><th>Équipe</th>
+              <th>Erreurs</th><th>Corrections</th><th>Débrief</th>
+            </tr></thead>
+            <tbody id="global-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════
+//  USERS CONFIG
+// ══════════════════════════════════════
+const USERS = {
+  safae:    { name:'Safae',    role:'supervisor', color:'#4F8EF7', pass:'safae123' },
+  fatima:   { name:'Fatima',   role:'supervisor', color:'#2DD4BF', pass:'fatima123' },
+  chaymae:  { name:'Chaymae',  role:'supervisor', color:'#F59E0B', pass:'chaymae123' },
+  khalil:   { name:'Khalil',   role:'supervisor', color:'#22C55E', pass:'khalil123' },
+  ikram:    { name:'Ikram',    role:'supervisor', color:'#A78BFA', pass:'ikram123' },
+  adnane:   { name:'Adnane',   role:'admin',      color:'#F59E0B', pass:'adnane123' },
+  houda:    { name:'Houda',    role:'admin',      color:'#F59E0B', pass:'houda123'  },
+};
+
+const SK_PREFIX = 'evalpro_v2_';
+let currentUser = null;
+let rows = [], counter = 0, saveTimer = null, filteredIds = null, globalFilteredIds = null;
+
+// ── LOGIN ──
+function doLogin() {
+  const uid = document.getElementById('login-user').value;
+  const pass = document.getElementById('login-pass').value;
+  const err = document.getElementById('login-error');
+  if (!uid || !USERS[uid]) { err.classList.add('show'); err.textContent = 'Veuillez sélectionner un utilisateur.'; return; }
+  if (pass !== USERS[uid].pass) { err.classList.add('show'); err.textContent = 'Mot de passe incorrect.'; return; }
+  err.classList.remove('show');
+  currentUser = { id: uid, ...USERS[uid] };
+  loadUserData();
+  renderTopbar();
+  if (currentUser.role === 'admin') {
+    document.getElementById('tab-admin').style.display = '';
+    document.getElementById('tab-global').style.display = '';
+  }
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app-screen').style.display = 'block';
+  document.getElementById('eval-sub').textContent = `Connecté en tant que ${currentUser.name} · Évaluations personnelles`;
+  renderTable(); updateFilters();
+}
+
+function doLogout() {
+  currentUser = null; rows = []; counter = 0; filteredIds = null; globalFilteredIds = null;
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('app-screen').style.display = 'none';
+  document.getElementById('login-pass').value = '';
+  document.getElementById('login-user').value = '';
+  document.getElementById('tab-admin').style.display = 'none';
+  document.getElementById('tab-global').style.display = 'none';
+  switchTab('eval');
+}
+
+function renderTopbar() {
+  const u = currentUser;
+  const av = document.getElementById('topbar-avatar');
+  const nm = document.getElementById('topbar-name');
+  const rl = document.getElementById('topbar-role');
+  av.textContent = u.name.charAt(0).toUpperCase();
+  av.style.background = u.color;
+  nm.textContent = u.name;
+  if (u.role === 'admin') { rl.textContent = 'Admin'; rl.className = 'role-badge role-admin'; }
+  else { rl.textContent = 'Superviseur'; rl.className = 'role-badge role-super'; }
+}
+
+// ── TABS ──
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-'+tab)?.classList.add('active');
+  document.getElementById('panel-'+tab)?.classList.add('active');
+  if (tab === 'admin') renderAdminPanel();
+  if (tab === 'global') renderGlobalPanel();
+}
+
+// ── STORAGE ──
+function storageKey(uid) { return SK_PREFIX + uid; }
+
+function loadUserData() {
+  try {
+    const d = JSON.parse(localStorage.getItem(storageKey(currentUser.id)) || '{}');
+    rows = d.rows || []; counter = d.counter || 0;
+  } catch(e) { rows = []; counter = 0; }
+}
+
+function scheduleSave() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    localStorage.setItem(storageKey(currentUser.id), JSON.stringify({ rows, counter }));
+    const p = document.getElementById('saved-pill');
+    p.classList.add('show'); setTimeout(() => p.classList.remove('show'), 2200);
+  }, 500);
+}
+
+function getAllData() {
+  const all = [];
+  Object.keys(USERS).forEach(uid => {
+    try {
+      const d = JSON.parse(localStorage.getItem(storageKey(uid)) || '{}');
+      const userRows = d.rows || [];
+      userRows.forEach(r => all.push({ ...r, _supervisor: uid, _supName: USERS[uid].name, _supColor: USERS[uid].color }));
+    } catch(e) {}
+  });
+  return all;
+}
+
+// ── ROW MANAGEMENT ──
+function addRow() {
+  const today = new Date().toISOString().split('T')[0];
+  const r = { id:++counter, date:today, agent:'', call:'', team:'',
+    evaluator: currentUser.name,
+    elocution:false, eloc_note:'', syntaxe:false, synt_note:'',
+    conjugaison:false, conj_note:'', corrections:'', debrief:'' };
+  rows.unshift(r); renderTable(); updateFilters(); scheduleSave();
+  setTimeout(() => { document.getElementById('agent-'+r.id)?.focus(); }, 60);
+}
+
+function removeRow(id) { rows = rows.filter(r => r.id !== id); renderTable(); updateFilters(); scheduleSave(); }
+
+function clearAll() {
+  if (!confirm('Effacer toutes vos évaluations ? Action irréversible.')) return;
+  rows = []; renderTable(); updateFilters(); scheduleSave();
+  showToast('🗑 Évaluations supprimées');
+}
+
+function setField(id, field, val) {
+  const r = rows.find(r => r.id === id); if (r) { r[field] = val; scheduleSave(); }
+  if (field === 'team') updateFilters();
+  updateStats();
+}
+
+function toggleErr(id, field) {
+  const r = rows.find(r => r.id === id); if (!r) return;
+  r[field] = !r[field];
+  document.getElementById('ecard-'+field+'-'+id)?.classList.toggle('active', r[field]);
+  document.getElementById('ecb-'+field+'-'+id)?.classList.toggle('checked', r[field]);
+  document.getElementById('enote-'+field+'-'+id)?.classList.toggle('open', r[field]);
+  updateStats(); scheduleSave();
+}
+
+function setDebrief(id, val) {
+  const r = rows.find(r => r.id === id); if (!r) return;
+  r.debrief = r.debrief === val ? '' : val;
+  ['OK','KO'].forEach(v => document.getElementById('db-'+v+'-'+id)?.classList.toggle('on', r.debrief === v));
+  updateStats(); scheduleSave();
+}
+
+// ── FILTERS ──
+function updateFilters() {
+  const teams = [...new Set(rows.map(r => r.team).filter(Boolean))].sort();
+  const ft = document.getElementById('f-team');
+  const tv = ft.value;
+  ft.innerHTML = '<option value="">Toutes</option>' + teams.map(t => `<option value="${x(t)}">${x(t)}</option>`).join('');
+  ft.value = tv;
+}
+
+function applyFilters() {
+  const team = document.getElementById('f-team').value;
+  const db = document.getElementById('f-debrief').value;
+  const s = document.getElementById('f-search').value.toLowerCase();
+  filteredIds = rows.filter(r => {
+    if (team && r.team !== team) return false;
+    if (db && r.debrief !== db) return false;
+    if (s && !r.agent.toLowerCase().includes(s) && !r.call.toLowerCase().includes(s)) return false;
+    return true;
+  }).map(r => r.id);
+  renderTable();
+}
+
+function resetFilters() {
+  ['f-team','f-debrief'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('f-search').value = '';
+  filteredIds = null; renderTable();
+}
+
+// ── STATS ──
+function updateStats() {
+  const ok = rows.filter(r => r.debrief==='OK').length;
+  const ko = rows.filter(r => r.debrief==='KO').length;
+  const rated = ok + ko;
+  document.getElementById('s-total').textContent = rows.length;
+  document.getElementById('s-ok').textContent = ok;
+  document.getElementById('s-ko').textContent = ko;
+  document.getElementById('s-rate').textContent = rated > 0 ? Math.round(ok/rated*100)+'%' : '—';
+  document.getElementById('s-eloc').textContent = rows.filter(r => r.elocution).length;
+  document.getElementById('s-synt').textContent = rows.filter(r => r.syntaxe).length;
+  document.getElementById('s-conj').textContent = rows.filter(r => r.conjugaison).length;
+}
+
+// ── ERR BLOCK ──
+function errBlock(r) {
+  const errs = [
+    {key:'elocution',   label:'🎙 Élocution',   nk:'eloc_note'},
+    {key:'syntaxe',     label:'✍ Syntaxe',      nk:'synt_note'},
+    {key:'conjugaison', label:'📝 Conjugaison', nk:'conj_note'}
+  ];
+  return `<div class="error-col">${errs.map(e => `
+    <div class="err-card ${r[e.key]?'active':''}" id="ecard-${e.key}-${r.id}">
+      <div class="err-header" onclick="toggleErr(${r.id},'${e.key}')">
+        <div class="err-checkbox ${r[e.key]?'checked':''}" id="ecb-${e.key}-${r.id}">${r[e.key]?'✓':''}</div>
+        <span class="err-name">${e.label}</span>
+        <span class="err-badge">✓</span>
+      </div>
+      <div class="err-note ${r[e.key]?'open':''}" id="enote-${e.key}-${r.id}">
+        <textarea placeholder="Détail…" oninput="setField(${r.id},'${e.nk}',this.value)">${x(r[e.nk])}</textarea>
+      </div>
+    </div>`).join('')}</div>`;
+}
+
+// ── RENDER TABLE ──
+function renderTable() {
+  const body = document.getElementById('eval-body');
+  const vis = filteredIds ? rows.filter(r => filteredIds.includes(r.id)) : rows;
+  updateStats();
+  if (vis.length === 0) {
+    body.innerHTML = `<tr><td colspan="9"><div class="empty-wrap">
+      <div class="empty-icon">📋</div>
+      <h3>${rows.length===0 ? 'Aucune évaluation pour l\'instant' : 'Aucun résultat pour ces filtres'}</h3>
+      <p>${rows.length===0 ? 'Cliquez sur « Nouvelle évaluation » pour commencer' : 'Modifiez ou réinitialisez vos filtres'}</p>
+    </div></td></tr>`;
+    return;
+  }
+  body.innerHTML = vis.map(r => `
+  <tr>
+    <td style="min-width:120px"><input type="date" value="${r.date}" onchange="setField(${r.id},'date',this.value)"></td>
+    <td style="min-width:140px"><input type="text" id="agent-${r.id}" placeholder="Nom de l'agent" value="${x(r.agent)}" oninput="setField(${r.id},'agent',this.value)"></td>
+    <td style="min-width:108px"><input type="text" placeholder="ID-001" value="${x(r.call)}" oninput="setField(${r.id},'call',this.value)"></td>
+    <td style="min-width:115px"><input type="text" placeholder="Équipe" value="${x(r.team)}" oninput="setField(${r.id},'team',this.value)"></td>
+    <td style="min-width:128px"><input type="text" placeholder="Superviseur" value="${x(r.evaluator)}" oninput="setField(${r.id},'evaluator',this.value)"></td>
+    <td>${errBlock(r)}</td>
+    <td style="min-width:155px"><textarea placeholder="Corrections apportées…" oninput="setField(${r.id},'corrections',this.value)">${x(r.corrections)}</textarea></td>
+    <td>
+      <div class="db-group">
+        <button id="db-OK-${r.id}" class="db-btn ok ${r.debrief==='OK'?'on':''}" onclick="setDebrief(${r.id},'OK')">✔ OK</button>
+        <button id="db-KO-${r.id}" class="db-btn ko ${r.debrief==='KO'?'on':''}" onclick="setDebrief(${r.id},'KO')">✘ KO</button>
+      </div>
+    </td>
+    <td><button class="btn-del" onclick="removeRow(${r.id})" title="Supprimer">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+    </button></td>
+  </tr>`).join('');
+}
+
+// ── ADMIN PANEL ──
+function renderAdminPanel() {
+  const allData = getAllData();
+  const admins = Object.entries(USERS).filter(([,u]) => u.role==='admin');
+  const supers = Object.entries(USERS).filter(([,u]) => u.role==='supervisor');
+
+  function userCard(uid, u) {
+    const count = allData.filter(r => r._supervisor === uid).length;
+    return `<div class="user-card">
+      <div class="uc-avatar" style="background:${u.color}">${u.name.charAt(0)}</div>
+      <div>
+        <div class="uc-name">${u.name}</div>
+        <div class="uc-role">${u.role==='admin'?'Administrateur':'Superviseur'}</div>
+      </div>
+      ${u.role==='supervisor'?`<div class="uc-count"><div class="uc-count-val">${count}</div><div class="uc-count-label">évals.</div></div>`:''}
+    </div>`;
+  }
+
+  document.getElementById('admin-admins-grid').innerHTML = admins.map(([uid,u]) => userCard(uid,u)).join('');
+  document.getElementById('admin-supers-grid').innerHTML = supers.map(([uid,u]) => userCard(uid,u)).join('');
+}
+
+// ── GLOBAL PANEL ──
+let globalAllRows = [];
+
+function renderGlobalPanel() {
+  globalAllRows = getAllData();
+
+  // Update filter dropdowns
+  const sups = [...new Set(globalAllRows.map(r => r._supervisor))];
+  const teams = [...new Set(globalAllRows.map(r => r.team).filter(Boolean))].sort();
+  const gs = document.getElementById('gf-sup'), gt = document.getElementById('gf-team');
+  const sv = gs.value, tv = gt.value;
+  gs.innerHTML = '<option value="">Tous</option>' + sups.map(s => `<option value="${s}">${USERS[s]?.name||s}</option>`).join('');
+  gt.innerHTML = '<option value="">Toutes</option>' + teams.map(t => `<option value="${x(t)}">${x(t)}</option>`).join('');
+  gs.value = sv; gt.value = tv;
+
+  applyGlobalFilters();
+}
+
+function applyGlobalFilters() {
+  const sup = document.getElementById('gf-sup').value;
+  const team = document.getElementById('gf-team').value;
+  const db = document.getElementById('gf-debrief').value;
+  const s = document.getElementById('gf-search').value.toLowerCase();
+  const filtered = globalAllRows.filter(r => {
+    if (sup && r._supervisor !== sup) return false;
+    if (team && r.team !== team) return false;
+    if (db && r.debrief !== db) return false;
+    if (s && !r.agent.toLowerCase().includes(s) && !r.call.toLowerCase().includes(s)) return false;
+    return true;
+  });
+  renderGlobalTable(filtered);
+  updateGlobalStats(filtered);
+}
+
+function resetGlobalFilters() {
+  ['gf-sup','gf-team','gf-debrief'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('gf-search').value = '';
+  applyGlobalFilters();
+}
+
+function updateGlobalStats(data) {
+  const ok = data.filter(r => r.debrief==='OK').length;
+  const ko = data.filter(r => r.debrief==='KO').length;
+  const rated = ok + ko;
+  document.getElementById('gs-total').textContent = data.length;
+  document.getElementById('gs-ok').textContent = ok;
+  document.getElementById('gs-ko').textContent = ko;
+  document.getElementById('gs-rate').textContent = rated > 0 ? Math.round(ok/rated*100)+'%' : '—';
+  document.getElementById('gs-eloc').textContent = data.filter(r => r.elocution).length;
+  document.getElementById('gs-synt').textContent = data.filter(r => r.syntaxe).length;
+  document.getElementById('gs-conj').textContent = data.filter(r => r.conjugaison).length;
+}
+
+function renderGlobalTable(data) {
+  const body = document.getElementById('global-body');
+  if (data.length === 0) {
+    body.innerHTML = `<tr><td colspan="8"><div class="empty-wrap">
+      <div class="empty-icon">🌐</div>
+      <h3>Aucune donnée disponible</h3>
+      <p>Les superviseurs n'ont pas encore soumis d'évaluations.</p>
+    </div></td></tr>`;
+    return;
+  }
+  body.innerHTML = data.map(r => {
+    const errs = [r.elocution?'🎙 Élocution':'', r.syntaxe?'✍ Syntaxe':'', r.conjugaison?'📝 Conjugaison':''].filter(Boolean);
+    const dbPill = r.debrief==='OK' ? `<span class="pill-ok">✔ OK</span>` : r.debrief==='KO' ? `<span class="pill-ko">✘ KO</span>` : `<span class="pill-nd">—</span>`;
+    return `<tr>
+      <td><span class="supervisor-tag"><span class="sup-dot" style="background:${r._supColor}"></span>${r._supName}</span></td>
+      <td class="readonly-cell">${r.date||'—'}</td>
+      <td class="readonly-cell">${x(r.agent)||'—'}</td>
+      <td class="readonly-cell">${x(r.call)||'—'}</td>
+      <td class="readonly-cell">${x(r.team)||'—'}</td>
+      <td>${errs.length ? errs.map(e=>`<span class="err-pill">${e}</span>`).join('') : '<span style="color:var(--text3);font-size:12px">Aucune</span>'}</td>
+      <td class="readonly-cell" style="max-width:200px;word-break:break-word">${x(r.corrections)||'—'}</td>
+      <td>${dbPill}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── EXPORTS ──
+function getExportRows(rws) {
+  return rws.map(r => [r.date,r.agent,r.call,r.team,r.evaluator||r._supName||'',
+    r.elocution?'Oui':'Non',r.eloc_note, r.syntaxe?'Oui':'Non',r.synt_note,
+    r.conjugaison?'Oui':'Non',r.conj_note, r.corrections, r.debrief]);
+}
+const EXPORT_HEADERS = ['Date','Nom agent','ID Appel','Équipe','Évaluateur','Élocution','Note élocution','Syntaxe','Note syntaxe','Conjugaison','Note conjugaison','Corrections','Débrief'];
+
+function exportCSV() {
+  if (!rows.length) { showToast('Aucune donnée à exporter'); return; }
+  const csv = [EXPORT_HEADERS,...getExportRows(rows)].map(row=>row.map(c=>'"'+String(c||'').replace(/"/g,'""')+'"').join(',')).join('\r\n');
+  dl('\uFEFF'+csv, `eval_${currentUser.id}_${now()}.csv`, 'text/csv;charset=utf-8;');
+  showToast('✓ Export CSV téléchargé');
+}
+function exportExcel() {
+  if (!rows.length) { showToast('Aucune donnée à exporter'); return; }
+  makeXLSX([EXPORT_HEADERS,...getExportRows(rows)], `eval_${currentUser.id}_${now()}.xlsx`);
+  showToast('✓ Export Excel téléchargé');
+}
+function exportGlobalCSV() {
+  const all = getAllData();
+  if (!all.length) { showToast('Aucune donnée à exporter'); return; }
+  const headers = ['Superviseur',...EXPORT_HEADERS];
+  const data = all.map(r => [r._supName,...getExportRows([r])[0]]);
+  const csv = [headers,...data].map(row=>row.map(c=>'"'+String(c||'').replace(/"/g,'""')+'"').join(',')).join('\r\n');
+  dl('\uFEFF'+csv, `eval_global_${now()}.csv`, 'text/csv;charset=utf-8;');
+  showToast('✓ Export global CSV téléchargé');
+}
+function exportGlobalExcel() {
+  const all = getAllData();
+  if (!all.length) { showToast('Aucune donnée à exporter'); return; }
+  const headers = ['Superviseur',...EXPORT_HEADERS];
+  const data = all.map(r => [r._supName,...getExportRows([r])[0]]);
+  makeXLSX([headers,...data], `eval_global_${now()}.xlsx`);
+  showToast('✓ Export global Excel téléchargé');
+}
+
+function makeXLSX(data, filename) {
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet(data);
+  ws['!cols'] = data[0].map(()=>({wch:18}));
+  XLSX.utils.book_append_sheet(wb, ws, 'Évaluations');
+  XLSX.writeFile(wb, filename);
+}
+
+function dl(content, filename, mime) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([content],{type:mime}));
+  a.download = filename; a.click();
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+function x(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function now() { return new Date().toISOString().split('T')[0]; }
+</script>
+</body>
+</html>
